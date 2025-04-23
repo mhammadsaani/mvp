@@ -1,0 +1,135 @@
+{% extends 'base.html' %}
+
+{% block title %}Student Dashboard - Teacher-Student Platform{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <h3 class="card-title mb-0">Student Dashboard</h3>
+                <a href="{% url 'student:create_job_post' %}" class="btn btn-light">Post a New Job</a>
+            </div>
+            <div class="card-body">
+                <h4>Welcome, {{ user.get_full_name }}!</h4>
+                <p>From here you can manage your job posts, view teacher bids, and search for teachers.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h4 class="card-title mb-0">Your Job Posts</h4>
+            </div>
+            <div class="card-body">
+                {% if job_posts %}
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Subject</th>
+                                    <th>Status</th>
+                                    <th>Bids</th>
+                                    <th>Created</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for job_post in job_posts %}
+                                    <tr>
+                                        <td>{{ job_post.title }}</td>
+                                        <td>{{ job_post.subject }}</td>
+                                        <td>
+                                            {% if job_post.status == 'open' %}
+                                                <span class="badge bg-success">Open</span>
+                                            {% elif job_post.status == 'assigned' %}
+                                                <span class="badge bg-primary">Assigned</span>
+                                            {% elif job_post.status == 'completed' %}
+                                                <span class="badge bg-info">Completed</span>
+                                            {% elif job_post.status == 'cancelled' %}
+                                                <span class="badge bg-danger">Cancelled</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ job_post.teacherbid_set.count }}</td>
+                                        <td>{{ job_post.created_at|date:"M d, Y" }}</td>
+                                        <td>
+                                            <a href="{% url 'student:job_post_detail' job_post.pk %}" class="btn btn-sm btn-primary">View</a>
+                                            {% if job_post.status == 'open' %}
+                                                <a href="{% url 'student:edit_job_post' job_post.pk %}" class="btn btn-sm btn-secondary">Edit</a>
+                                                <a href="{% url 'student:delete_job_post' job_post.pk %}" class="btn btn-sm btn-danger">Delete</a>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="alert alert-info">
+                        You haven't posted any jobs yet. <a href="{% url 'student:create_job_post' %}">Create your first job post</a>.
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h4 class="card-title mb-0">Recent Bids</h4>
+            </div>
+            <div class="card-body">
+                {% if bids %}
+                    <div class="list-group">
+                        {% for bid in bids|slice:":5" %}
+                            <a href="{% url 'student:job_post_detail' bid.job_post.pk %}" class="list-group-item list-group-item-action">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h5 class="mb-1">{{ bid.teacher.user.get_full_name }}</h5>
+                                    <small>{{ bid.created_at|date:"M d, Y" }}</small>
+                                </div>
+                                <p class="mb-1">Bid on: {{ bid.job_post.title }}</p>
+                                <small>
+                                    {% if bid.status == 'pending' %}
+                                        <span class="badge bg-warning">Pending</span>
+                                    {% elif bid.status == 'accepted' %}
+                                        <span class="badge bg-success">Accepted</span>
+                                    {% elif bid.status == 'rejected' %}
+                                        <span class="badge bg-danger">Rejected</span>
+                                    {% endif %}
+                                    Hourly Rate: ${{ bid.hourly_rate }}
+                                </small>
+                            </a>
+                        {% endfor %}
+                    </div>
+                    {% if bids.count > 5 %}
+                        <div class="text-center mt-3">
+                            <a href="#" class="btn btn-outline-primary btn-sm">View All Bids</a>
+                        </div>
+                    {% endif %}
+                {% else %}
+                    <div class="alert alert-info">
+                        You haven't received any bids yet.
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="card mt-4">
+            <div class="card-header bg-primary text-white">
+                <h4 class="card-title mb-0">Quick Actions</h4>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{% url 'student:create_job_post' %}" class="btn btn-primary">Post a New Job</a>
+                    <a href="{% url 'student:teacher_search' %}" class="btn btn-secondary">Find Teachers</a>
+                    <a href="{% url 'accounts:profile' %}" class="btn btn-outline-primary">Edit Profile</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

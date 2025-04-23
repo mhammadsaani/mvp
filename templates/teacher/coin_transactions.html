@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+
+{% block title %}Coin Transactions - Teacher-Student Platform{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-10 offset-md-1">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h3 class="mb-0">Coin Transactions</h3>
+                    <span class="badge bg-light text-dark">Current Balance: {{ request.user.teacher_profile.coins }} coins</span>
+                </div>
+                <div class="card-body">
+                    {% if transactions %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Transaction Type</th>
+                                        <th>Amount</th>
+                                        <th>Description</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for transaction in transactions %}
+                                        <tr>
+                                            <td>{{ transaction.timestamp|date:"F j, Y, g:i a" }}</td>
+                                            <td>
+                                                {% if transaction.transaction_type == 'purchase' %}
+                                                    <span class="badge bg-success">Purchase</span>
+                                                {% elif transaction.transaction_type == 'usage' %}
+                                                    <span class="badge bg-warning">Usage</span>
+                                                {% elif transaction.transaction_type == 'refund' %}
+                                                    <span class="badge bg-info">Refund</span>
+                                                {% else %}
+                                                    <span class="badge bg-secondary">{{ transaction.transaction_type }}</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                {% if transaction.transaction_type == 'purchase' or transaction.transaction_type == 'refund' %}
+                                                    <span class="text-success">+{{ transaction.amount }}</span>
+                                                {% else %}
+                                                    <span class="text-danger">-{{ transaction.amount }}</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>{{ transaction.description }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle"></i> You don't have any coin transactions yet.
+                        </div>
+                    {% endif %}
+                    
+                    <div class="d-grid gap-2 mt-3">
+                        <a href="{% url 'teacher:buy_coins' %}" class="btn btn-primary">Buy More Coins</a>
+                        <a href="{% url 'teacher:dashboard' %}" class="btn btn-secondary">Back to Dashboard</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

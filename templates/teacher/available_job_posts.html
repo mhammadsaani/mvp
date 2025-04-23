@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+
+{% block title %}Available Job Posts - Teacher-Student Platform{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card shadow mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">Available Job Posts</h3>
+                </div>
+                <div class="card-body">
+                    {% if job_posts %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Title</th>
+                                        <th>Subject</th>
+                                        <th>Grade Level</th>
+                                        <th>Budget</th>
+                                        <th>Location</th>
+                                        <th>Posted</th>
+                                        <th>Similarity</th>
+                                        <th>Status</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for job_post in job_posts %}
+                                        <tr>
+                                            <td>{{ job_post.title }}</td>
+                                            <td>{{ job_post.subject }}</td>
+                                            <td>{{ job_post.grade_level }}</td>
+                                            <td>{{ job_post.budget_range }}</td>
+                                            <td>{{ job_post.location }}</td>
+                                            <td>{{ job_post.created_at|timesince }} ago</td>
+                                            <td>
+                                                <div class="progress">
+                                                    <div class="progress-bar {% if job_post.similarity_score >= 60 %}bg-success{% else %}bg-danger{% endif %}" 
+                                                         role="progressbar" 
+                                                         style="width: {{ job_post.similarity_score }}%;" 
+                                                         aria-valuenow="{{ job_post.similarity_score }}" 
+                                                         aria-valuemin="0" 
+                                                         aria-valuemax="100">
+                                                        {{ job_post.similarity_score }}%
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                {% if job_post.has_bid %}
+                                                    <span class="badge bg-info">Bid Placed</span>
+                                                {% elif not job_post.is_eligible %}
+                                                    <span class="badge bg-danger">Not Eligible</span>
+                                                {% elif job_post.max_bids_reached %}
+                                                    <span class="badge bg-warning">Max Bids Reached</span>
+                                                {% else %}
+                                                    <span class="badge bg-success">Can Bid</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                <a href="{% url 'teacher:job_post_detail' job_post.pk %}" class="btn btn-sm btn-primary">View</a>
+                                                {% if job_post.is_eligible and not job_post.has_bid and not job_post.max_bids_reached %}
+                                                    <a href="{% url 'teacher:create_bid' job_post.pk %}" class="btn btn-sm btn-success">Bid</a>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle"></i> No job posts are currently available. Check back later for new opportunities.
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

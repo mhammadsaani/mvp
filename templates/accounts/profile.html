@@ -1,0 +1,130 @@
+{% extends 'base.html' %}
+
+{% block title %}Profile - Teacher-Student Platform{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h3 class="card-title mb-0">Profile Information</h3>
+            </div>
+            <div class="card-body text-center">
+                {% if user.profile_picture %}
+                    <img src="{{ user.profile_picture.url }}" alt="{{ user.username }}" class="img-fluid rounded-circle mb-3" style="max-width: 150px;">
+                {% else %}
+                    <img src="https://via.placeholder.com/150" alt="{{ user.username }}" class="img-fluid rounded-circle mb-3">
+                {% endif %}
+                
+                <h4>{{ user.get_full_name }}</h4>
+                <p class="text-muted">@{{ user.username }}</p>
+                <p class="badge bg-primary">{{ user.get_user_type_display }}</p>
+                
+                <div class="d-grid gap-2 mt-3">
+                    <a href="{% url 'accounts:edit_profile' %}" class="btn btn-primary">Edit Profile</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h3 class="card-title mb-0">Account Details</h3>
+            </div>
+            <div class="card-body">
+                <table class="table">
+                    <tbody>
+                        <tr>
+                            <th>Username:</th>
+                            <td>{{ user.username }}</td>
+                        </tr>
+                        <tr>
+                            <th>Email:</th>
+                            <td>{{ user.email }}</td>
+                        </tr>
+                        <tr>
+                            <th>Full Name:</th>
+                            <td>{{ user.get_full_name }}</td>
+                        </tr>
+                        <tr>
+                            <th>Phone Number:</th>
+                            <td>{{ user.phone_number|default:"Not provided" }}</td>
+                        </tr>
+                        <tr>
+                            <th>Address:</th>
+                            <td>{{ user.address|default:"Not provided" }}</td>
+                        </tr>
+                        <tr>
+                            <th>Account Type:</th>
+                            <td>{{ user.get_user_type_display }}</td>
+                        </tr>
+                        <tr>
+                            <th>Date Joined:</th>
+                            <td>{{ user.date_joined|date:"F d, Y" }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        {% if user.is_student %}
+            <div class="card mt-4">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="card-title mb-0">Student Information</h3>
+                </div>
+                <div class="card-body">
+                    <table class="table">
+                        <tbody>
+                            <tr>
+                                <th>Education Level:</th>
+                                <td>{{ user.student_profile.education_level|default:"Not provided" }}</td>
+                            </tr>
+                            <tr>
+                                <th>Subjects of Interest:</th>
+                                <td>{{ user.student_profile.subjects_of_interest|default:"Not provided" }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    
+                    <div class="d-grid gap-2 mt-3">
+                        <a href="{% url 'student:dashboard' %}" class="btn btn-primary">Go to Student Dashboard</a>
+                    </div>
+                </div>
+            </div>
+        {% elif user.is_teacher %}
+            <div class="card mt-4">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="card-title mb-0">Teacher Information</h3>
+                </div>
+                <div class="card-body">
+                    <table class="table">
+                        <tbody>
+                            <tr>
+                                <th>Expertise:</th>
+                                <td>{{ user.teacher_profile.expertise|default:"Not provided" }}</td>
+                            </tr>
+                            <tr>
+                                <th>Experience:</th>
+                                <td>{{ user.teacher_profile.experience_years }} years</td>
+                            </tr>
+                            <tr>
+                                <th>Hourly Rate:</th>
+                                <td>${{ user.teacher_profile.hourly_rate }}</td>
+                            </tr>
+                            <tr>
+                                <th>Coins Balance:</th>
+                                <td>{{ user.teacher_profile.coins_balance }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    
+                    <div class="d-grid gap-2 mt-3">
+                        <a href="{% url 'teacher:dashboard' %}" class="btn btn-primary">Go to Teacher Dashboard</a>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

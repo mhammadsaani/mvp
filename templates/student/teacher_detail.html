@@ -1,0 +1,120 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ teacher.user.get_full_name }} - Teacher Profile{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card shadow mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">{{ teacher.user.get_full_name }}</h3>
+                </div>
+                <div class="card-body text-center">
+                    {% if teacher.user.profile_picture %}
+                        <img src="{{ teacher.user.profile_picture.url }}" alt="{{ teacher.user.get_full_name }}" class="img-fluid rounded-circle mb-3" style="max-width: 150px;">
+                    {% else %}
+                        <img src="https://via.placeholder.com/150" alt="Default Profile" class="img-fluid rounded-circle mb-3">
+                    {% endif %}
+                    
+                    <h5>{{ teacher.expertise }}</h5>
+                    <p class="text-muted">{{ teacher.years_of_experience }} years of experience</p>
+                    
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'student:contact_teacher' teacher.pk %}" class="btn btn-primary">Contact Teacher</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card shadow mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Contact Information</h4>
+                </div>
+                <div class="card-body">
+                    <p><strong>Email:</strong> {{ teacher.user.email }}</p>
+                    {% if teacher.user.phone_number %}
+                        <p><strong>Phone:</strong> {{ teacher.user.phone_number }}</p>
+                    {% endif %}
+                    {% if teacher.user.address %}
+                        <p><strong>Location:</strong> {{ teacher.user.address }}</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-8">
+            <div class="card shadow mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">About</h4>
+                </div>
+                <div class="card-body">
+                    <h5>Bio</h5>
+                    <p>{{ teacher.bio }}</p>
+                    
+                    <h5>Education</h5>
+                    <p>{{ teacher.education }}</p>
+                    
+                    <h5>Teaching Approach</h5>
+                    <p>{{ teacher.teaching_approach }}</p>
+                </div>
+            </div>
+            
+            <div class="card shadow mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Certifications</h4>
+                </div>
+                <div class="card-body">
+                    {% if teacher.certification_set.all %}
+                        <div class="list-group">
+                            {% for cert in teacher.certification_set.all %}
+                                <div class="list-group-item">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <h5 class="mb-1">{{ cert.title }}</h5>
+                                        {% if cert.is_verified %}
+                                            <span class="badge bg-success">Verified</span>
+                                        {% else %}
+                                            <span class="badge bg-warning">Pending Verification</span>
+                                        {% endif %}
+                                    </div>
+                                    <p class="mb-1">{{ cert.description }}</p>
+                                    <small>Issued by: {{ cert.issuing_organization }}</small>
+                                    <br>
+                                    <small>Issue Date: {{ cert.issue_date }}</small>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="alert alert-info">
+                            No certifications uploaded yet.
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            {% if teacher.teachertimetable_set.all %}
+                <div class="card shadow">
+                    <div class="card-header bg-primary text-white">
+                        <h4 class="mb-0">Teaching Schedule</h4>
+                    </div>
+                    <div class="card-body">
+                        {% for timetable in teacher.teachertimetable_set.all %}
+                            <div class="card mb-3">
+                                <div class="card-header">
+                                    <h5 class="mb-0">{{ timetable.title }}</h5>
+                                </div>
+                                <div class="card-body">
+                                    <p><strong>Days Available:</strong> {{ timetable.days_available }}</p>
+                                    <p><strong>Time Slots:</strong> {{ timetable.time_slots }}</p>
+                                    <p><strong>Number of Classes:</strong> {{ timetable.number_of_classes }}</p>
+                                    <p><strong>Hourly Rate:</strong> ${{ timetable.hourly_rate }}</p>
+                                    <p><strong>Notes:</strong> {{ timetable.notes }}</p>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

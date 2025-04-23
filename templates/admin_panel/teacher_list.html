@@ -1,0 +1,120 @@
+{% extends 'base.html' %}
+
+{% block title %}Teacher Management - Admin Panel{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <h2>Teacher Management</h2>
+                <a href="{% url 'admin_panel:create_teacher' %}" class="btn btn-success">
+                    <i class="fas fa-plus"></i> Create Teacher Account
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">Teacher Profiles</h3>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Expertise</th>
+                                    <th>Experience</th>
+                                    <th>Hourly Rate</th>
+                                    <th>Coins</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for teacher in teachers %}
+                                    <tr>
+                                        <td>{{ teacher.user.get_full_name }}</td>
+                                        <td>{{ teacher.user.email }}</td>
+                                        <td>{{ teacher.expertise|truncatechars:30 }}</td>
+                                        <td>{{ teacher.years_of_experience }} years</td>
+                                        <td>${{ teacher.hourly_rate }}</td>
+                                        <td>{{ teacher.coins }}</td>
+                                        <td>
+                                            {% if teacher.user.is_active %}
+                                                {% if teacher.user.is_blocked %}
+                                                    <span class="badge bg-danger">Blocked</span>
+                                                {% else %}
+                                                    <span class="badge bg-success">Active</span>
+                                                {% endif %}
+                                            {% else %}
+                                                <span class="badge bg-secondary">Inactive</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <a href="#" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#teacherModal{{ teacher.pk }}">View</a>
+                                            <a href="{% url 'admin_panel:remove_teacher' teacher.pk %}" class="btn btn-sm btn-danger">Remove</a>
+                                        </td>
+                                    </tr>
+                                    
+                                    <!-- Modal for teacher details -->
+                                    <div class="modal fade" id="teacherModal{{ teacher.pk }}" tabindex="-1" aria-labelledby="teacherModalLabel{{ teacher.pk }}" aria-hidden="true">
+                                        <div class="modal-dialog modal-lg">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="teacherModalLabel{{ teacher.pk }}">{{ teacher.user.get_full_name }}</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <p><strong>Email:</strong> {{ teacher.user.email }}</p>
+                                                    <p><strong>Phone:</strong> {{ teacher.user.phone_number|default:"Not provided" }}</p>
+                                                    <p><strong>Address:</strong> {{ teacher.user.address|default:"Not provided" }}</p>
+                                                    <p><strong>Expertise:</strong> {{ teacher.expertise }}</p>
+                                                    <p><strong>Bio:</strong> {{ teacher.bio }}</p>
+                                                    <p><strong>Education:</strong> {{ teacher.education }}</p>
+                                                    <p><strong>Years of Experience:</strong> {{ teacher.years_of_experience }}</p>
+                                                    <p><strong>Teaching Approach:</strong> {{ teacher.teaching_approach }}</p>
+                                                    <p><strong>Hourly Rate:</strong> ${{ teacher.hourly_rate }}</p>
+                                                    <p><strong>Availability:</strong> {{ teacher.availability }}</p>
+                                                    <p><strong>Coins:</strong> {{ teacher.coins }}</p>
+                                                    
+                                                    <h6 class="mt-4">Certifications</h6>
+                                                    {% if teacher.certification_set.all %}
+                                                        <ul class="list-group">
+                                                            {% for cert in teacher.certification_set.all %}
+                                                                <li class="list-group-item">
+                                                                    {{ cert.title }} - {{ cert.issuing_organization }}
+                                                                    {% if cert.is_verified %}
+                                                                        <span class="badge bg-success">Verified</span>
+                                                                    {% else %}
+                                                                        <span class="badge bg-warning">Pending Verification</span>
+                                                                    {% endif %}
+                                                                </li>
+                                                            {% endfor %}
+                                                        </ul>
+                                                    {% else %}
+                                                        <p>No certifications uploaded.</p>
+                                                    {% endif %}
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                    <a href="{% url 'admin_panel:remove_teacher' teacher.pk %}" class="btn btn-danger">Remove Teacher</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

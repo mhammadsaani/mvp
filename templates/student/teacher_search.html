@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+
+{% block title %}Search Teachers - Teacher-Student Platform{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col-md-8 offset-md-2">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">Search for Teachers</h3>
+                </div>
+                <div class="card-body">
+                    <form method="get" class="d-flex">
+                        <input type="text" name="q" class="form-control me-2" placeholder="Search by name, subject, or expertise" value="{{ query }}">
+                        <button type="submit" class="btn btn-primary">Search</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            {% if teachers %}
+                <h4>{{ teachers.count }} Teacher{{ teachers.count|pluralize }} Found</h4>
+                
+                <div class="row row-cols-1 row-cols-md-2 g-4 mt-2">
+                    {% for teacher in teachers %}
+                        <div class="col">
+                            <div class="card h-100 shadow-sm">
+                                <div class="card-body">
+                                    <h5 class="card-title">{{ teacher.user.get_full_name }}</h5>
+                                    <h6 class="card-subtitle mb-2 text-muted">{{ teacher.expertise }}</h6>
+                                    
+                                    <p class="card-text">
+                                        <strong>Experience:</strong> {{ teacher.years_of_experience }} years<br>
+                                        <strong>Education:</strong> {{ teacher.education }}<br>
+                                        <strong>Hourly Rate:</strong> ${{ teacher.hourly_rate }}
+                                    </p>
+                                    
+                                    <p class="card-text">{{ teacher.bio|truncatewords:20 }}</p>
+                                    
+                                    <div class="d-flex justify-content-between">
+                                        <a href="{% url 'student:teacher_detail' teacher.pk %}" class="btn btn-primary">View Profile</a>
+                                        <a href="{% url 'student:contact_teacher' teacher.pk %}" class="btn btn-outline-primary">Contact</a>
+                                    </div>
+                                </div>
+                                <div class="card-footer text-muted">
+                                    <small>
+                                        {% if teacher.certifications.count %}
+                                            <i class="fas fa-certificate"></i> {{ teacher.certifications.count }} Certification{{ teacher.certifications.count|pluralize }}
+                                        {% endif %}
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="alert alert-info">
+                    {% if query %}
+                        No teachers found matching "{{ query }}". Try a different search term.
+                    {% else %}
+                        No teachers found. Try searching by name, subject, or expertise.
+                    {% endif %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

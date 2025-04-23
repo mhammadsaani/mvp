@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin Actions - Admin Panel{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">Admin Action Log</h3>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Admin</th>
+                                    <th>Action</th>
+                                    <th>Target</th>
+                                    <th>Details</th>
+                                    <th>Timestamp</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for action in admin_actions %}
+                                    <tr>
+                                        <td>{{ action.admin.get_full_name }}</td>
+                                        <td>
+                                            <span class="badge {% if action.action_type == 'block' %}bg-warning{% elif action.action_type == 'unblock' %}bg-success{% elif action.action_type == 'remove' %}bg-danger{% elif action.action_type == 'create' %}bg-primary{% elif action.action_type == 'verify' %}bg-info{% else %}bg-secondary{% endif %}">
+                                                {{ action.get_action_type_display }}
+                                            </span>
+                                        </td>
+                                        <td>{{ action.target_type }}</td>
+                                        <td>{{ action.details }}</td>
+                                        <td>{{ action.timestamp|date:"F j, Y, g:i a" }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

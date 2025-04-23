@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% block title %}Verify Certification - Admin Panel{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">Verify Certification</h3>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h5>Certification Details</h5>
+                            <p><strong>Title:</strong> {{ certification.title }}</p>
+                            <p><strong>Teacher:</strong> {{ certification.teacher.user.get_full_name }}</p>
+                            <p><strong>Issuing Organization:</strong> {{ certification.issuing_organization }}</p>
+                            <p><strong>Issue Date:</strong> {{ certification.issue_date }}</p>
+                            <p><strong>Expiry Date:</strong> {{ certification.expiry_date|default:"Not specified" }}</p>
+                            <p><strong>Upload Date:</strong> {{ certification.upload_date|date:"F j, Y" }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h5>Certificate File</h5>
+                            <div class="mb-3">
+                                <a href="{{ certification.certificate_file.url }}" class="btn btn-primary" target="_blank">
+                                    <i class="fas fa-file-pdf"></i> View Certificate
+                                </a>
+                            </div>
+                            {% if certification.certificate_file.url|lower|endswith:'.pdf' %}
+                                <div class="embed-responsive embed-responsive-16by9">
+                                    <iframe class="embed-responsive-item" src="{{ certification.certificate_file.url }}" style="width: 100%; height: 300px;"></iframe>
+                                </div>
+                            {% elif certification.certificate_file.url|lower|endswith:'.jpg' or certification.certificate_file.url|lower|endswith:'.jpeg' or certification.certificate_file.url|lower|endswith:'.png' %}
+                                <img src="{{ certification.certificate_file.url }}" class="img-fluid" alt="Certificate">
+                            {% else %}
+                                <p>Preview not available. Please download the file to view it.</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="verification_notes" class="form-label">Verification Notes (Optional)</label>
+                            <textarea id="verification_notes" name="verification_notes" class="form-control" rows="3"></textarea>
+                            <div class="form-text">Add any notes about the verification process or the certificate.</div>
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-success">Verify Certification</button>
+                            <a href="{% url 'admin_panel:certification_list' %}" class="btn btn-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

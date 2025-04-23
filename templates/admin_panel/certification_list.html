@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+
+{% block title %}Certification Management - Admin Panel{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">Certification Management</h3>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Teacher</th>
+                                    <th>Issuing Organization</th>
+                                    <th>Issue Date</th>
+                                    <th>Upload Date</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for certification in certifications %}
+                                    <tr>
+                                        <td>{{ certification.title }}</td>
+                                        <td>{{ certification.teacher.user.get_full_name }}</td>
+                                        <td>{{ certification.issuing_organization }}</td>
+                                        <td>{{ certification.issue_date }}</td>
+                                        <td>{{ certification.upload_date|date:"F j, Y" }}</td>
+                                        <td>
+                                            {% if certification.is_verified %}
+                                                <span class="badge bg-success">Verified</span>
+                                            {% else %}
+                                                <span class="badge bg-warning">Pending Verification</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <a href="{{ certification.certificate_file.url }}" class="btn btn-sm btn-primary" target="_blank">View File</a>
+                                            {% if not certification.is_verified %}
+                                                <a href="{% url 'admin_panel:verify_certification' certification.pk %}" class="btn btn-sm btn-success">Verify</a>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

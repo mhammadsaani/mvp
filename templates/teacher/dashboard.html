@@ -1,0 +1,296 @@
+{% extends 'base.html' %}
+
+{% block title %}Teacher Dashboard - Teacher-Student Platform{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <h3 class="card-title mb-0">Teacher Dashboard</h3>
+                <div>
+                    <a href="{% url 'teacher:available_job_posts' %}" class="btn btn-light me-2">Available Jobs</a>
+                    <a href="{% url 'teacher:buy_coins' %}" class="btn btn-warning">Buy Coins</a>
+                </div>
+            </div>
+            <div class="card-body">
+                <h4>Welcome, {{ user.get_full_name }}!</h4>
+                <p>From here you can manage your profile, certifications, timetables, and bids.</p>
+                
+                <div class="row mt-3">
+                    <div class="col-md-3">
+                        <div class="card bg-light">
+                            <div class="card-body text-center">
+                                <h5 class="card-title">Coin Balance</h5>
+                                <h2 class="text-primary">{{ user.teacher_profile.coins_balance }}</h2>
+                                <a href="{% url 'teacher:buy_coins' %}" class="btn btn-sm btn-warning">Buy More</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card bg-light">
+                            <div class="card-body text-center">
+                                <h5 class="card-title">Active Bids</h5>
+                                <h2 class="text-primary">{{ bids|length }}</h2>
+                                <a href="{% url 'teacher:available_job_posts' %}" class="btn btn-sm btn-primary">Find Jobs</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card bg-light">
+                            <div class="card-body text-center">
+                                <h5 class="card-title">Certifications</h5>
+                                <h2 class="text-primary">{{ certifications|length }}</h2>
+                                <a href="{% url 'teacher:add_certification' %}" class="btn btn-sm btn-primary">Add New</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card bg-light">
+                            <div class="card-body text-center">
+                                <h5 class="card-title">Timetables</h5>
+                                <h2 class="text-primary">{{ timetables|length }}</h2>
+                                <a href="{% url 'teacher:create_timetable' %}" class="btn btn-sm btn-primary">Create New</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h4 class="card-title mb-0">Your Bids</h4>
+            </div>
+            <div class="card-body">
+                {% if bids %}
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Job Title</th>
+                                    <th>Hourly Rate</th>
+                                    <th>Similarity</th>
+                                    <th>Status</th>
+                                    <th>Created</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for bid in bids %}
+                                    <tr>
+                                        <td>{{ bid.job_post.title }}</td>
+                                        <td>${{ bid.hourly_rate }}</td>
+                                        <td>{{ bid.similarity_score }}%</td>
+                                        <td>
+                                            {% if bid.status == 'pending' %}
+                                                <span class="badge bg-warning">Pending</span>
+                                            {% elif bid.status == 'accepted' %}
+                                                <span class="badge bg-success">Accepted</span>
+                                            {% elif bid.status == 'rejected' %}
+                                                <span class="badge bg-danger">Rejected</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ bid.created_at|date:"M d, Y" }}</td>
+                                        <td>
+                                            <a href="{% url 'teacher:job_post_detail' bid.job_post.pk %}" class="btn btn-sm btn-primary">View Job</a>
+                                            {% if bid.status == 'pending' %}
+                                                <a href="{% url 'teacher:edit_bid' bid.pk %}" class="btn btn-sm btn-secondary">Edit</a>
+                                                <a href="{% url 'teacher:delete_bid' bid.pk %}" class="btn btn-sm btn-danger">Delete</a>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="alert alert-info">
+                        You haven't placed any bids yet. <a href="{% url 'teacher:available_job_posts' %}">Browse available jobs</a>.
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="card mt-4">
+            <div class="card-header bg-primary text-white">
+                <h4 class="card-title mb-0">Your Certifications</h4>
+            </div>
+            <div class="card-body">
+                {% if certifications %}
+                    <div class="row">
+                        {% for certification in certifications %}
+                            <div class="col-md-6 mb-3">
+                                <div class="card h-100">
+                                    <div class="card-body">
+                                        <h5 class="card-title">{{ certification.title }}</h5>
+                                        <h6 class="card-subtitle mb-2 text-muted">{{ certification.issuing_organization }}</h6>
+                                        <p class="card-text">
+                                            <strong>Issue Date:</strong> {{ certification.issue_date|date:"M d, Y" }}<br>
+                                            <strong>Expiry Date:</strong> {% if certification.expiry_date %}{{ certification.expiry_date|date:"M d, Y" }}{% else %}N/A{% endif %}<br>
+                                            <strong>Status:</strong> 
+                                            {% if certification.is_verified %}
+                                                <span class="badge bg-success">Verified</span>
+                                            {% else %}
+                                                <span class="badge bg-warning">Pending Verification</span>
+                                            {% endif %}
+                                        </p>
+                                        <div class="d-flex justify-content-between">
+                                            <a href="{{ certification.certificate_file.url }}" class="btn btn-sm btn-primary" target="_blank">View Certificate</a>
+                                            <div>
+                                                <a href="{% url 'teacher:edit_certification' certification.pk %}" class="btn btn-sm btn-secondary">Edit</a>
+                                                <a href="{% url 'teacher:delete_certification' certification.pk %}" class="btn btn-sm btn-danger">Delete</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="alert alert-info">
+                        You haven't added any certifications yet. <a href="{% url 'teacher:add_certification' %}">Add your first certification</a>.
+                    </div>
+                {% endif %}
+                
+                <div class="text-center mt-3">
+                    <a href="{% url 'teacher:add_certification' %}" class="btn btn-primary">Add New Certification</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h4 class="card-title mb-0">Your Profile</h4>
+            </div>
+            <div class="card-body">
+                {% if user.teacher_profile %}
+                    <div class="text-center mb-3">
+                        {% if user.profile_picture %}
+                            <img src="{{ user.profile_picture.url }}" alt="{{ user.get_full_name }}" class="img-fluid rounded-circle" style="max-width: 150px;">
+                        {% else %}
+                            <img src="https://via.placeholder.com/150" alt="{{ user.get_full_name }}" class="img-fluid rounded-circle">
+                        {% endif %}
+                    </div>
+                    
+                    <h5>{{ user.get_full_name }}</h5>
+                    <p class="text-muted">{{ user.email }}</p>
+                    
+                    <div class="mb-3">
+                        <strong>Expertise:</strong> {{ user.teacher_profile.expertise }}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <strong>Experience:</strong> {{ user.teacher_profile.experience_years }} years
+                    </div>
+                    
+                    <div class="mb-3">
+                        <strong>Hourly Rate:</strong> ${{ user.teacher_profile.hourly_rate }}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <strong>Bio:</strong>
+                        <p>{{ user.teacher_profile.bio|default:"No bio provided." }}</p>
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'teacher:edit_profile' %}" class="btn btn-primary">Edit Profile</a>
+                        <a href="{% url 'accounts:profile' %}" class="btn btn-outline-primary">View Full Profile</a>
+                    </div>
+                {% else %}
+                    <div class="alert alert-warning">
+                        You haven't created your teacher profile yet.
+                    </div>
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'teacher:create_profile' %}" class="btn btn-primary">Create Profile</a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="card mt-4">
+            <div class="card-header bg-primary text-white">
+                <h4 class="card-title mb-0">Your Timetables</h4>
+            </div>
+            <div class="card-body">
+                {% if timetables %}
+                    <div class="list-group">
+                        {% for timetable in timetables %}
+                            <div class="list-group-item">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h5 class="mb-1">{{ timetable.title }}</h5>
+                                    <small>{{ timetable.get_day_of_week_display }}</small>
+                                </div>
+                                <p class="mb-1">
+                                    {{ timetable.start_time|time:"g:i A" }} - {{ timetable.end_time|time:"g:i A" }}<br>
+                                    {{ timetable.class_count }} classes at ${{ timetable.hourly_rate }}/hour
+                                </p>
+                                <div class="d-flex justify-content-end">
+                                    <a href="{% url 'teacher:edit_timetable' timetable.pk %}" class="btn btn-sm btn-secondary me-2">Edit</a>
+                                    <a href="{% url 'teacher:delete_timetable' timetable.pk %}" class="btn btn-sm btn-danger">Delete</a>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="alert alert-info">
+                        You haven't created any timetables yet.
+                    </div>
+                {% endif %}
+                
+                <div class="d-grid gap-2 mt-3">
+                    <a href="{% url 'teacher:create_timetable' %}" class="btn btn-primary">Create New Timetable</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mt-4">
+            <div class="card-header bg-primary text-white">
+                <h4 class="card-title mb-0">Recent Transactions</h4>
+            </div>
+            <div class="card-body">
+                {% if transactions %}
+                    <div class="list-group">
+                        {% for transaction in transactions|slice:":5" %}
+                            <div class="list-group-item">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h6 class="mb-1">
+                                        {% if transaction.transaction_type == 'purchase' %}
+                                            <span class="badge bg-success">Purchase</span>
+                                        {% else %}
+                                            <span class="badge bg-primary">Usage</span>
+                                        {% endif %}
+                                    </h6>
+                                    <small>{{ transaction.timestamp|date:"M d, Y" }}</small>
+                                </div>
+                                <p class="mb-1">
+                                    {% if transaction.transaction_type == 'purchase' %}
+                                        Purchased {{ transaction.coins_amount }} coins
+                                    {% else %}
+                                        Used {{ transaction.coins_amount }} coins
+                                    {% endif %}
+                                </p>
+                                <small>{{ transaction.description|default:"" }}</small>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="text-center mt-3">
+                        <a href="{% url 'teacher:coin_transactions' %}" class="btn btn-outline-primary btn-sm">View All Transactions</a>
+                    </div>
+                {% else %}
+                    <div class="alert alert-info">
+                        You don't have any transactions yet.
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

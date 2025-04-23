@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+
+{% block title %}Create Timetable - Teacher-Student Platform{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">Create Teaching Timetable</h3>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info mb-4">
+                        <i class="fas fa-info-circle"></i> Create a timetable to let students know when you're available and how many classes you can offer.
+                    </div>
+                    
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.title.id_for_label }}" class="form-label">Timetable Title</label>
+                            {{ form.title }}
+                            {% if form.title.errors %}
+                                <div class="text-danger">{{ form.title.errors }}</div>
+                            {% endif %}
+                            <div class="form-text">E.g., "Summer 2025 Schedule" or "Math Tutoring Sessions"</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.days_available.id_for_label }}" class="form-label">Days Available</label>
+                            {{ form.days_available }}
+                            {% if form.days_available.errors %}
+                                <div class="text-danger">{{ form.days_available.errors }}</div>
+                            {% endif %}
+                            <div class="form-text">E.g., "Monday, Wednesday, Friday" or "Weekends only"</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.time_slots.id_for_label }}" class="form-label">Time Slots</label>
+                            {{ form.time_slots }}
+                            {% if form.time_slots.errors %}
+                                <div class="text-danger">{{ form.time_slots.errors }}</div>
+                            {% endif %}
+                            <div class="form-text">E.g., "4:00 PM - 6:00 PM" or "Mornings 9-12, Evenings 6-9"</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.number_of_classes.id_for_label }}" class="form-label">Number of Classes</label>
+                            {{ form.number_of_classes }}
+                            {% if form.number_of_classes.errors %}
+                                <div class="text-danger">{{ form.number_of_classes.errors }}</div>
+                            {% endif %}
+                            <div class="form-text">How many classes are you offering in this timetable?</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.hourly_rate.id_for_label }}" class="form-label">Hourly Rate ($)</label>
+                            {{ form.hourly_rate }}
+                            {% if form.hourly_rate.errors %}
+                                <div class="text-danger">{{ form.hourly_rate.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.notes.id_for_label }}" class="form-label">Additional Notes</label>
+                            {{ form.notes }}
+                            {% if form.notes.errors %}
+                                <div class="text-danger">{{ form.notes.errors }}</div>
+                            {% endif %}
+                            <div class="form-text">Any additional information about your availability or teaching schedule.</div>
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">Create Timetable</button>
+                            <a href="{% url 'teacher:dashboard' %}" class="btn btn-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

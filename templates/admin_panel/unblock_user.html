@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block title %}Unblock User - Admin Panel{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-6 offset-md-3">
+            <div class="card shadow">
+                <div class="card-header bg-success text-white">
+                    <h3 class="mb-0">Unblock User</h3>
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">Are you sure you want to unblock this user?</h5>
+                    <p class="card-text">Username: {{ user.username }}</p>
+                    <p class="card-text">Name: {{ user.get_full_name }}</p>
+                    <p class="card-text">Email: {{ user.email }}</p>
+                    <p class="card-text">User Type: {{ user.get_user_type_display }}</p>
+                    
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i> Unblocking this user will allow them to log in and use the platform again.
+                    </div>
+                    
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-success">Confirm Unblock</button>
+                            <a href="{% url 'admin_panel:user_list' %}" class="btn btn-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

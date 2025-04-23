@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block title %}Block User - Admin Panel{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-6 offset-md-3">
+            <div class="card shadow">
+                <div class="card-header bg-warning text-dark">
+                    <h3 class="mb-0">Block User</h3>
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">Are you sure you want to block this user?</h5>
+                    <p class="card-text">Username: {{ user.username }}</p>
+                    <p class="card-text">Name: {{ user.get_full_name }}</p>
+                    <p class="card-text">Email: {{ user.email }}</p>
+                    <p class="card-text">User Type: {{ user.get_user_type_display }}</p>
+                    
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle"></i> Blocking this user will prevent them from logging in and using the platform. They will not be able to access their account until unblocked.
+                    </div>
+                    
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-warning">Confirm Block</button>
+                            <a href="{% url 'admin_panel:user_list' %}" class="btn btn-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

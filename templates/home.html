@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+
+{% block title %}Home - Teacher-Student Platform{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12 text-center mb-5">
+        <h1 class="display-4">Welcome to Teacher-Student Platform</h1>
+        <p class="lead">Connecting students with the right teachers for their educational needs.</p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <h3 class="card-title">For Students</h3>
+                <p class="card-text">Post your requirements and find the perfect teacher for your educational needs.</p>
+                {% if user.is_authenticated and user.is_student %}
+                    <a href="{% url 'student:dashboard' %}" class="btn btn-primary">Go to Dashboard</a>
+                {% else %}
+                    <a href="{% url 'accounts:register' %}" class="btn btn-primary">Register as Student</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <h3 class="card-title">For Teachers</h3>
+                <p class="card-text">Create your profile, showcase your expertise, and connect with students.</p>
+                {% if user.is_authenticated and user.is_teacher %}
+                    <a href="{% url 'teacher:dashboard' %}" class="btn btn-primary">Go to Dashboard</a>
+                {% else %}
+                    <p class="text-muted">Teachers are added by admin</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <h3 class="card-title">How It Works</h3>
+                <p class="card-text">Our platform uses advanced matching to connect students with the right teachers.</p>
+                <a href="#" class="btn btn-primary">Learn More</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-5">
+    <div class="col-md-12">
+        <h2 class="text-center mb-4">Why Choose Our Platform?</h2>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-3 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <h4 class="card-title">Smart Matching</h4>
+                <p class="card-text">Our similarity index ensures you find the most suitable teachers for your needs.</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <h4 class="card-title">Verified Teachers</h4>
+                <p class="card-text">All teacher certifications are verified by our admin team.</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <h4 class="card-title">Secure Communication</h4>
+                <p class="card-text">Your contact information remains private until you choose to share it.</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <h4 class="card-title">Flexible Scheduling</h4>
+                <p class="card-text">Teachers create detailed timetables to fit your learning schedule.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

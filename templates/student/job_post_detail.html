@@ -1,0 +1,136 @@
+{% extends 'base.html' %}
+
+{% block title %}Job Post Details - Teacher-Student Platform{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card shadow mb-4">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h3 class="mb-0">{{ job_post.title }}</h3>
+                    <span class="badge bg-{{ job_post.status|yesno:'success,warning,danger' }}">
+                        {{ job_post.get_status_display }}
+                    </span>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <h5>Description</h5>
+                        <p>{{ job_post.description }}</p>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <h5>Subject</h5>
+                            <p>{{ job_post.subject }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h5>Grade Level</h5>
+                            <p>{{ job_post.grade_level }}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <h5>Budget Range</h5>
+                            <p>{{ job_post.budget_range }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h5>Location</h5>
+                            <p>{{ job_post.location }}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <h5>Teaching Mode</h5>
+                            <p>{{ job_post.get_teaching_mode_display }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h5>Duration</h5>
+                            <p>{{ job_post.duration }}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <h5>Schedule Preferences</h5>
+                        <p>{{ job_post.schedule_preferences }}</p>
+                    </div>
+                    
+                    {% if job_post.additional_requirements %}
+                    <div class="mb-3">
+                        <h5>Additional Requirements</h5>
+                        <p>{{ job_post.additional_requirements }}</p>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="mb-3">
+                        <h5>Posted On</h5>
+                        <p>{{ job_post.created_at|date:"F j, Y, g:i a" }}</p>
+                    </div>
+                    
+                    <div class="d-flex gap-2">
+                        <a href="{% url 'student:edit_job_post' job_post.pk %}" class="btn btn-primary">Edit</a>
+                        <a href="{% url 'student:delete_job_post' job_post.pk %}" class="btn btn-danger">Delete</a>
+                        {% if job_post.status == 'open' %}
+                            <form method="post" action="{% url 'student:requirements_not_met' job_post.pk %}">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-warning">Requirements Not Met</button>
+                            </form>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Teacher Bids</h4>
+                </div>
+                <div class="card-body">
+                    {% if bids %}
+                        <p>Current Bid Cycle: {{ job_post.current_bid_cycle }}</p>
+                        <p>Maximum Bids: {{ job_post.max_bids_current_cycle }}</p>
+                        
+                        <div class="list-group">
+                            {% for bid in bids %}
+                                <div class="list-group-item">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <h5 class="mb-1">{{ bid.teacher.user.get_full_name }}</h5>
+                                        <span class="badge bg-{{ bid.status|yesno:'success,warning,danger' }}">
+                                            {{ bid.get_status_display }}
+                                        </span>
+                                    </div>
+                                    <p class="mb-1">Bid Amount: ${{ bid.bid_amount }}</p>
+                                    <p class="mb-1">Similarity Score: {{ bid.similarity_score }}%</p>
+                                    <p class="mb-1">Availability: {{ bid.availability }}</p>
+                                    <p class="mb-1">Message: {{ bid.message }}</p>
+                                    <small>Bid on: {{ bid.created_at|date:"F j, Y, g:i a" }}</small>
+                                    
+                                    {% if job_post.status == 'open' and bid.status == 'pending' %}
+                                        <div class="mt-2 d-flex gap-2">
+                                            <form method="post" action="{% url 'student:accept_bid' bid.pk %}">
+                                                {% csrf_token %}
+                                                <button type="submit" class="btn btn-success btn-sm">Accept</button>
+                                            </form>
+                                            <form method="post" action="{% url 'student:reject_bid' bid.pk %}">
+                                                {% csrf_token %}
+                                                <button type="submit" class="btn btn-danger btn-sm">Reject</button>
+                                            </form>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="alert alert-info">
+                            No bids received yet. Teachers will be able to bid on your job post soon.
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

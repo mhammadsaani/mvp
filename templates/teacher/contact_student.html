@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block title %}Contact Student - Teacher-Student Platform{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">Contact Student for "{{ job_post.title }}"</h3>
+                </div>
+                <div class="card-body">
+                    <div class="alert {% if is_free_contact %}alert-success{% else %}alert-warning{% endif %} mb-4">
+                        {% if is_free_contact %}
+                            <i class="fas fa-check-circle"></i> You can contact this student for free because the job post is less than 5 minutes old and you're in the top 5 teachers by similarity score.
+                        {% else %}
+                            <i class="fas fa-coins"></i> Contacting this student will cost 1 coin. Your current balance: {{ request.user.teacher_profile.coins }} coins.
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-4">
+                        <h5>Job Post Details</h5>
+                        <p><strong>Title:</strong> {{ job_post.title }}</p>
+                        <p><strong>Subject:</strong> {{ job_post.subject }}</p>
+                        <p><strong>Grade Level:</strong> {{ job_post.grade_level }}</p>
+                        <p><strong>Budget Range:</strong> {{ job_post.budget_range }}</p>
+                    </div>
+                    
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="mb-3">
+                            <label for="message" class="form-label">Message to Student</label>
+                            <textarea id="message" name="message" class="form-control" rows="5" required></textarea>
+                            <div class="form-text">Introduce yourself and explain how you can help with their requirements.</div>
+                        </div>
+                        
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle"></i> Your contact information will be shared with the student when you send this message.
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">Send Message</button>
+                            <a href="{% url 'teacher:job_post_detail' job_post.pk %}" class="btn btn-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

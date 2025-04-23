@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+
+{% block title %}System Configuration - Admin Panel{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">System Configuration</h3>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <h5 class="mb-3">Bidding Settings</h5>
+                        <div class="mb-3">
+                            <label for="{{ form.initial_max_bids.id_for_label }}" class="form-label">Initial Maximum Bids</label>
+                            {{ form.initial_max_bids }}
+                            {% if form.initial_max_bids.errors %}
+                                <div class="text-danger">{{ form.initial_max_bids.errors }}</div>
+                            {% endif %}
+                            <div class="form-text">The maximum number of teachers who can bid on a job post in the first cycle.</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.additional_bids_per_cycle.id_for_label }}" class="form-label">Additional Bids Per Cycle</label>
+                            {{ form.additional_bids_per_cycle }}
+                            {% if form.additional_bids_per_cycle.errors %}
+                                <div class="text-danger">{{ form.additional_bids_per_cycle.errors }}</div>
+                            {% endif %}
+                            <div class="form-text">The number of additional teachers who can bid in each subsequent cycle.</div>
+                        </div>
+                        
+                        <h5 class="mb-3 mt-4">Similarity Index Settings</h5>
+                        <div class="mb-3">
+                            <label for="{{ form.minimum_similarity_threshold.id_for_label }}" class="form-label">Minimum Similarity Threshold (%)</label>
+                            {{ form.minimum_similarity_threshold }}
+                            {% if form.minimum_similarity_threshold.errors %}
+                                <div class="text-danger">{{ form.minimum_similarity_threshold.errors }}</div>
+                            {% endif %}
+                            <div class="form-text">The minimum similarity score required for a teacher to bid on a job post.</div>
+                        </div>
+                        
+                        <h5 class="mb-3 mt-4">Coin Settings</h5>
+                        <div class="mb-3">
+                            <label for="{{ form.free_contact_time_limit.id_for_label }}" class="form-label">Free Contact Time Limit (minutes)</label>
+                            {{ form.free_contact_time_limit }}
+                            {% if form.free_contact_time_limit.errors %}
+                                <div class="text-danger">{{ form.free_contact_time_limit.errors }}</div>
+                            {% endif %}
+                            <div class="form-text">The time limit (in minutes) after job post creation during which top teachers can contact students for free.</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.free_contact_teacher_limit.id_for_label }}" class="form-label">Free Contact Teacher Limit</label>
+                            {{ form.free_contact_teacher_limit }}
+                            {% if form.free_contact_teacher_limit.errors %}
+                                <div class="text-danger">{{ form.free_contact_teacher_limit.errors }}</div>
+                            {% endif %}
+                            <div class="form-text">The number of top teachers who can contact students for free within the time limit.</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.contact_cost.id_for_label }}" class="form-label">Contact Cost (coins)</label>
+                            {{ form.contact_cost }}
+                            {% if form.contact_cost.errors %}
+                                <div class="text-danger">{{ form.contact_cost.errors }}</div>
+                            {% endif %}
+                            <div class="form-text">The number of coins required to contact a student.</div>
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">Save Configuration</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

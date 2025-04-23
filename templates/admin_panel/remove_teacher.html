@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block title %}Remove Teacher - Admin Panel{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-6 offset-md-3">
+            <div class="card shadow">
+                <div class="card-header bg-danger text-white">
+                    <h3 class="mb-0">Remove Teacher</h3>
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">Are you sure you want to remove this teacher?</h5>
+                    <p class="card-text">Name: {{ teacher.user.get_full_name }}</p>
+                    <p class="card-text">Email: {{ teacher.user.email }}</p>
+                    <p class="card-text">Expertise: {{ teacher.expertise }}</p>
+                    <p class="card-text">Experience: {{ teacher.years_of_experience }} years</p>
+                    
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-triangle"></i> This action cannot be undone. The teacher account, profile, certifications, bids, and all associated data will be permanently deleted.
+                    </div>
+                    
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-danger">Confirm Remove</button>
+                            <a href="{% url 'admin_panel:teacher_list' %}" class="btn btn-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

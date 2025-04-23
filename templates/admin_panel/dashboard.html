@@ -1,0 +1,172 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin Dashboard - Teacher-Student Platform{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h3 class="card-title mb-0">Admin Dashboard</h3>
+            </div>
+            <div class="card-body">
+                <h4>Welcome, {{ user.get_full_name }}!</h4>
+                <p>From here you can manage users, job posts, teachers, and system configurations.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-3 mb-4">
+        <div class="card text-center h-100">
+            <div class="card-body">
+                <h1 class="display-4 text-primary">{{ student_count }}</h1>
+                <h5 class="card-title">Students</h5>
+                <p class="card-text">Total registered students on the platform.</p>
+                <a href="{% url 'admin_panel:user_list' %}" class="btn btn-primary">Manage Users</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 mb-4">
+        <div class="card text-center h-100">
+            <div class="card-body">
+                <h1 class="display-4 text-primary">{{ teacher_count }}</h1>
+                <h5 class="card-title">Teachers</h5>
+                <p class="card-text">Total registered teachers on the platform.</p>
+                <a href="{% url 'admin_panel:teacher_list' %}" class="btn btn-primary">Manage Teachers</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 mb-4">
+        <div class="card text-center h-100">
+            <div class="card-body">
+                <h1 class="display-4 text-primary">{{ job_post_count }}</h1>
+                <h5 class="card-title">Job Posts</h5>
+                <p class="card-text">Total job posts created by students.</p>
+                <a href="{% url 'admin_panel:job_post_list' %}" class="btn btn-primary">Manage Job Posts</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 mb-4">
+        <div class="card text-center h-100">
+            <div class="card-body">
+                <h1 class="display-4 text-primary">{{ certification_count }}</h1>
+                <h5 class="card-title">Certifications</h5>
+                <p class="card-text">Total certifications uploaded by teachers.</p>
+                <a href="{% url 'admin_panel:certification_list' %}" class="btn btn-primary">Manage Certifications</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h4 class="card-title mb-0">Recent Admin Actions</h4>
+            </div>
+            <div class="card-body">
+                {% if recent_actions %}
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Action</th>
+                                    <th>Admin</th>
+                                    <th>Target User</th>
+                                    <th>Description</th>
+                                    <th>Timestamp</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for action in recent_actions %}
+                                    <tr>
+                                        <td>
+                                            {% if action.action_type == 'block_user' %}
+                                                <span class="badge bg-danger">Block User</span>
+                                            {% elif action.action_type == 'unblock_user' %}
+                                                <span class="badge bg-success">Unblock User</span>
+                                            {% elif action.action_type == 'remove_job_post' %}
+                                                <span class="badge bg-warning">Remove Job Post</span>
+                                            {% elif action.action_type == 'remove_teacher' %}
+                                                <span class="badge bg-danger">Remove Teacher</span>
+                                            {% elif action.action_type == 'create_teacher' %}
+                                                <span class="badge bg-primary">Create Teacher</span>
+                                            {% elif action.action_type == 'verify_certification' %}
+                                                <span class="badge bg-info">Verify Certification</span>
+                                            {% elif action.action_type == 'update_system_config' %}
+                                                <span class="badge bg-secondary">Update Config</span>
+                                            {% else %}
+                                                <span class="badge bg-secondary">{{ action.action_type }}</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ action.admin.username }}</td>
+                                        <td>{{ action.target_user.username|default:"N/A" }}</td>
+                                        <td>{{ action.description }}</td>
+                                        <td>{{ action.timestamp|date:"M d, Y H:i" }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="text-center mt-3">
+                        <a href="{% url 'admin_panel:admin_action_list' %}" class="btn btn-outline-primary">View All Actions</a>
+                    </div>
+                {% else %}
+                    <div class="alert alert-info">
+                        No admin actions recorded yet.
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h4 class="card-title mb-0">Quick Actions</h4>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{% url 'admin_panel:create_teacher' %}" class="btn btn-primary">Create Teacher Account</a>
+                    <a href="{% url 'admin_panel:user_list' %}" class="btn btn-secondary">Manage Users</a>
+                    <a href="{% url 'admin_panel:job_post_list' %}" class="btn btn-info">Manage Job Posts</a>
+                    <a href="{% url 'admin_panel:certification_list' %}" class="btn btn-warning">Verify Certifications</a>
+                    <a href="{% url 'admin_panel:system_config' %}" class="btn btn-dark">System Configuration</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mt-4">
+            <div class="card-header bg-primary text-white">
+                <h4 class="card-title mb-0">System Status</h4>
+            </div>
+            <div class="card-body">
+                <ul class="list-group">
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        Students
+                        <span class="badge bg-primary rounded-pill">{{ student_count }}</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        Teachers
+                        <span class="badge bg-primary rounded-pill">{{ teacher_count }}</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        Job Posts
+                        <span class="badge bg-primary rounded-pill">{{ job_post_count }}</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        Certifications
+                        <span class="badge bg-primary rounded-pill">{{ certification_count }}</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

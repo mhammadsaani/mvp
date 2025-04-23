@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+
+{% block title %}User Management - Admin Panel{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">User Management</h3>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Username</th>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>User Type</th>
+                                    <th>Date Joined</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for user in users %}
+                                    <tr>
+                                        <td>{{ user.username }}</td>
+                                        <td>{{ user.get_full_name }}</td>
+                                        <td>{{ user.email }}</td>
+                                        <td>
+                                            <span class="badge {% if user.user_type == 'admin' %}bg-danger{% elif user.user_type == 'teacher' %}bg-primary{% else %}bg-success{% endif %}">
+                                                {{ user.get_user_type_display }}
+                                            </span>
+                                        </td>
+                                        <td>{{ user.date_joined|date:"F j, Y" }}</td>
+                                        <td>
+                                            {% if user.is_active %}
+                                                {% if user.is_blocked %}
+                                                    <span class="badge bg-danger">Blocked</span>
+                                                {% else %}
+                                                    <span class="badge bg-success">Active</span>
+                                                {% endif %}
+                                            {% else %}
+                                                <span class="badge bg-secondary">Inactive</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if user.user_type != 'admin' %}
+                                                {% if user.is_blocked %}
+                                                    <a href="{% url 'admin_panel:unblock_user' user.pk %}" class="btn btn-sm btn-success">Unblock</a>
+                                                {% else %}
+                                                    <a href="{% url 'admin_panel:block_user' user.pk %}" class="btn btn-sm btn-warning">Block</a>
+                                                {% endif %}
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

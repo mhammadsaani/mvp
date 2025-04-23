@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+
+{% block title %}Job Post Management - Admin Panel{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">Job Post Management</h3>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Student</th>
+                                    <th>Subject</th>
+                                    <th>Status</th>
+                                    <th>Created</th>
+                                    <th>Bids</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for job_post in job_posts %}
+                                    <tr>
+                                        <td>{{ job_post.title }}</td>
+                                        <td>{{ job_post.student.user.get_full_name }}</td>
+                                        <td>{{ job_post.subject }}</td>
+                                        <td>
+                                            <span class="badge {% if job_post.status == 'open' %}bg-success{% elif job_post.status == 'assigned' %}bg-primary{% else %}bg-secondary{% endif %}">
+                                                {{ job_post.get_status_display }}
+                                            </span>
+                                        </td>
+                                        <td>{{ job_post.created_at|date:"F j, Y" }}</td>
+                                        <td>{{ job_post.teacherbid_set.count }}</td>
+                                        <td>
+                                            <a href="#" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#jobPostModal{{ job_post.pk }}">View</a>
+                                            <a href="{% url 'admin_panel:remove_job_post' job_post.pk %}" class="btn btn-sm btn-danger">Remove</a>
+                                        </td>
+                                    </tr>
+                                    
+                                    <!-- Modal for job post details -->
+                                    <div class="modal fade" id="jobPostModal{{ job_post.pk }}" tabindex="-1" aria-labelledby="jobPostModalLabel{{ job_post.pk }}" aria-hidden="true">
+                                        <div class="modal-dialog modal-lg">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="jobPostModalLabel{{ job_post.pk }}">{{ job_post.title }}</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <p><strong>Description:</strong> {{ job_post.description }}</p>
+                                                    <p><strong>Subject:</strong> {{ job_post.subject }}</p>
+                                                    <p><strong>Grade Level:</strong> {{ job_post.grade_level }}</p>
+                                                    <p><strong>Budget Range:</strong> {{ job_post.budget_range }}</p>
+                                                    <p><strong>Location:</strong> {{ job_post.location }}</p>
+                                                    <p><strong>Teaching Mode:</strong> {{ job_post.get_teaching_mode_display }}</p>
+                                                    <p><strong>Duration:</strong> {{ job_post.duration }}</p>
+                                                    <p><strong>Schedule Preferences:</strong> {{ job_post.schedule_preferences }}</p>
+                                                    {% if job_post.additional_requirements %}
+                                                        <p><strong>Additional Requirements:</strong> {{ job_post.additional_requirements }}</p>
+                                                    {% endif %}
+                                                    <p><strong>Current Bid Cycle:</strong> {{ job_post.current_bid_cycle }}</p>
+                                                    <p><strong>Max Bids Current Cycle:</strong> {{ job_post.max_bids_current_cycle }}</p>
+                                                    <p><strong>Created At:</strong> {{ job_post.created_at|date:"F j, Y, g:i a" }}</p>
+                                                    <p><strong>Updated At:</strong> {{ job_post.updated_at|date:"F j, Y, g:i a" }}</p>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                    <a href="{% url 'admin_panel:remove_job_post' job_post.pk %}" class="btn btn-danger">Remove Job Post</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
