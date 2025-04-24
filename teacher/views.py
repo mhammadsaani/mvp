@@ -16,16 +16,16 @@ def teacher_dashboard(request):
     Teacher dashboard view
     """
     # Get teacher's bids
-    bids = TeacherBid.objects.filter(teacher__user=request.user).order_by('-created_at')
+    bids = TeacherBid.objects.filter(teacher=request.user.teacher_profile).order_by('-created_at')
     
     # Get teacher's certifications
-    certifications = Certification.objects.filter(teacher__user=request.user).order_by('-upload_date')
+    certifications = Certification.objects.filter(teacher=request.user.teacher_profile).order_by('-issue_date')
     
     # Get teacher's timetables
-    timetables = TeacherTimetable.objects.filter(teacher__user=request.user).order_by('-created_at')
+    timetables = TeacherTimetable.objects.filter(teacher=request.user.teacher_profile).order_by('-created_at')
     
     # Get teacher's coin transactions
-    transactions = CoinTransaction.objects.filter(teacher__user=request.user).order_by('-timestamp')
+    transactions = CoinTransaction.objects.filter(teacher=request.user.teacher_profile).order_by('-transaction_date')
     
     context = {
         'bids': bids,
@@ -376,22 +376,22 @@ def buy_coins(request):
     if request.method == 'POST':
         form = CoinPurchaseForm(request.POST)
         if form.is_valid():
-            coins_amount = form.cleaned_data.get('coins_amount')
+            amount = form.cleaned_data.get('coins_amount')
             payment_method = form.cleaned_data.get('payment_method')
             
             # Create a coin transaction
             transaction = CoinTransaction.objects.create(
                 teacher=request.user.teacher_profile,
                 transaction_type='purchase',
-                amount=coins_amount,
-                description=f'Purchased {coins_amount} coins via {payment_method}'
+                amount=amount,
+                description=f'Purchased {amount} coins via {payment_method}'
             )
             
             # Update teacher's coin balance
-            request.user.teacher_profile.coins += coins_amount
+            request.user.teacher_profile.coins += amount
             request.user.teacher_profile.save()
             
-            messages.success(request, f'You have successfully purchased {coins_amount} coins!')
+            messages.success(request, f'You have successfully purchased {amount} coins!')
             return redirect('teacher:dashboard')
     else:
         form = CoinPurchaseForm()
@@ -404,7 +404,7 @@ def coin_transactions(request):
     """
     View coin transactions
     """
-    transactions = CoinTransaction.objects.filter(teacher=request.user.teacher_profile).order_by('-timestamp')
+    transactions = CoinTransaction.objects.filter(teacher=request.user.teacher_profile).order_by('-transaction_date')
     
     return render(request, 'teacher/coin_transactions.html', {'transactions': transactions})
 

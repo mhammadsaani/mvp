@@ -65,14 +65,39 @@ class JobPostForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         # Map model fields to template fields
         if self.instance.pk:
+            # Set initial values from the model instance if it exists
             self.fields['grade_level'].initial = self.instance.education_level
             self.fields['location'].initial = self.instance.location_preference
+            
+            # Additional fields can be stored in the description or as JSON in a future field
+            # For now, we'll leave them empty or could parse from description if needed
     
     def save(self, commit=True):
         instance = super().save(commit=False)
+        
         # Map template fields to model fields
         instance.education_level = self.cleaned_data.get('grade_level')
         instance.location_preference = self.cleaned_data.get('location')
+        
+        # Store additional fields in the description for now
+        # In a future update, these could be stored in a separate JSON field
+        additional_info = {
+            'teaching_mode': self.cleaned_data.get('teaching_mode'),
+            'duration': self.cleaned_data.get('duration'),
+            'schedule_preferences': self.cleaned_data.get('schedule_preferences'),
+            'additional_requirements': self.cleaned_data.get('additional_requirements')
+        }
+        
+        # Append additional info to description
+        if instance.description:
+            instance.description += f"\n\nAdditional Information:\n"
+        else:
+            instance.description = "Additional Information:\n"
+            
+        for key, value in additional_info.items():
+            if value:  # Only add non-empty values
+                formatted_key = key.replace('_', ' ').title()
+                instance.description += f"- {formatted_key}: {value}\n"
         
         if commit:
             instance.save()

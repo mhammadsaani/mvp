@@ -22,7 +22,7 @@
                         <div class="card bg-light">
                             <div class="card-body text-center">
                                 <h5 class="card-title">Coin Balance</h5>
-                                <h2 class="text-primary">{{ user.teacher_profile.coins_balance }}</h2>
+                                <h2 class="text-primary">{{ user.teacher_profile.coins }}</h2>
                                 <a href="{% url 'teacher:buy_coins' %}" class="btn btn-sm btn-warning">Buy More</a>
                             </div>
                         </div>
@@ -267,13 +267,13 @@
                                             <span class="badge bg-primary">Usage</span>
                                         {% endif %}
                                     </h6>
-                                    <small>{{ transaction.timestamp|date:"M d, Y" }}</small>
+                                    <small>{{ transaction.transaction_date|date:"M d, Y" }}</small>
                                 </div>
                                 <p class="mb-1">
                                     {% if transaction.transaction_type == 'purchase' %}
-                                        Purchased {{ transaction.coins_amount }} coins
+                                        Purchased {{ transaction.amount }} coins
                                     {% else %}
-                                        Used {{ transaction.coins_amount }} coins
+                                        Used {{ transaction.amount }} coins
                                     {% endif %}
                                 </p>
                                 <small>{{ transaction.description|default:"" }}</small>

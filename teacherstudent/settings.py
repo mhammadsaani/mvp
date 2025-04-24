@@ -25,13 +25,18 @@ SECRET_KEY = 'django-insecure-6k-c)ohjkr39ugmp_3b_3r&6@yjjiwr_r!a07i$i_zh8f$swe&
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['*', 'work-1-bdavtgayalenppbm.prod-runtime.all-hands.dev', 'work-2-bdavtgayalenppbm.prod-runtime.all-hands.dev']
 
 # CSRF settings
 CSRF_TRUSTED_ORIGINS = [
     'https://work-1-bdavtgayalenppbm.prod-runtime.all-hands.dev',
     'https://work-2-bdavtgayalenppbm.prod-runtime.all-hands.dev',
 ]
+
+# Security settings
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
 
 
 # Application definition
@@ -61,6 +66,11 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'accounts.middleware.UserTypeMiddleware',
 ]
+
+# CORS settings
+CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_CREDENTIALS = True
+X_FRAME_OPTIONS = 'ALLOWALL'
 
 ROOT_URLCONF = 'teacherstudent.urls'
 

@@ -26,7 +26,7 @@
                                 <tbody>
                                     {% for transaction in transactions %}
                                         <tr>
-                                            <td>{{ transaction.timestamp|date:"F j, Y, g:i a" }}</td>
+                                            <td>{{ transaction.transaction_date|date:"F j, Y, g:i a" }}</td>
                                             <td>
                                                 {% if transaction.transaction_type == 'purchase' %}
                                                     <span class="badge bg-success">Purchase</span>
