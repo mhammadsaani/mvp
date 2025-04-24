@@ -38,6 +38,21 @@ def create_job_post(request):
         if form.is_valid():
             job_post = form.save(commit=False)
             job_post.student = request.user.student_profile
+            
+            # Store additional information in the description field
+            additional_info = []
+            if form.cleaned_data.get('teaching_mode'):
+                additional_info.append(f"Teaching Mode: {dict(form.fields['teaching_mode'].choices)[form.cleaned_data['teaching_mode']]}")
+            if form.cleaned_data.get('duration'):
+                additional_info.append(f"Duration: {dict(form.fields['duration'].choices)[form.cleaned_data['duration']]}")
+            if form.cleaned_data.get('schedule_preferences'):
+                additional_info.append(f"Schedule Preferences: {form.cleaned_data['schedule_preferences']}")
+            if form.cleaned_data.get('additional_requirements'):
+                additional_info.append(f"Additional Requirements: {form.cleaned_data['additional_requirements']}")
+            
+            if additional_info:
+                job_post.description += "\n\n" + "\n".join(additional_info)
+            
             job_post.save()
             messages.success(request, 'Job post created successfully!')
             return redirect('student:job_post_detail', pk=job_post.pk)
